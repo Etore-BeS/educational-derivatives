@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -171,26 +172,34 @@ if page == "Introdução":
     st.markdown('---')
 
     # Layout em colunas para imagem e texto, centralizado
-    col_left, col_center, col_right = st.columns([1, 2, 1])  # Proporção 1:2:1
+    col_left, col_center, col_right = st.columns([0.5, 3, 0.5])  # Wider center column
 
     with col_center:
-        col1, col2 = st.columns([1, 2])  # Proporção 1:2 entre as colunas
+        col1, col2 = st.columns([1.2, 2])  # More space for image (col1)
 
         with col1:
             try:
                 # Carregar e exibir a imagem
-                image = Image.open('images/IMG_1269.jpg')  # Atualize o caminho conforme necessário
-                st.image(image, caption='Étore Braga e Santos', use_column_width=True)
+                image = Image.open('images/IMG_1269.jpg')
+                st.image(image, caption='Durante Workshop no MIT em 2024', use_column_width=True, width=300)  # Added explicit width
             except FileNotFoundError:
                 st.error("Imagem não encontrada. Verifique o caminho e o nome do arquivo.")
 
         with col2:
             st.header("Étore Braga e Santos")
             st.markdown("""
-            - **Pesquisador de Inteligência Artificial**  |  USP  
-            - **Engenheiro de Machine Learning**  |  Klover.ai 
-            - **Summer Tech**  |  BTG Pactual  
+            ##### Atualmente:
+            - **Consultor** | [Gallify](https://gallify.com.br) & [BizAi](https://aibiusp.ai/)
+            - **Pesquisador de IA**  |  [Habeas Data](https://devhabeasdata.fearp.usp.br/equipe.html) & [AIBI](https://aibiusp.ai/) - USP
+            - **Engenheiro de Dados** | [FioCruz](https://fiocruz.br/)
+            - **Head de Dados** | [RAY]()
+            ##### Histórico:
+            - **AI Agent Researcher**  |  [Klover.ai](https://klover.ai)
+            - **Summer Tech**  |  [BTG Pactual](https://btgpactual.com.br)
+            - **Fundador e Diretor de Quant** | [CMF - USP](https://www.linkedin.com/company/cmfusp)
             """)
+            
+            gallify_logo = Image.open('images/simbolo_gallify.png')
             # Adicionar ícones aos links com padding e quebras de linha
             st.markdown("""
             <div style="display: flex; gap: 25px; justify-content: center; padding: 30px; margin-top: 10px;">
@@ -203,8 +212,11 @@ if page == "Introdução":
                 <a href='mailto:etorebraga@usp.br'>
                     <img src='https://cdn-icons-png.flaticon.com/512/732/732200.png' alt='Email' style='width:40px;height:40px;vertical-align: middle;'/>
                 </a>
+                <a href='https://www.gallify.dev/' target='_blank'>
+                    <img src='data:image/png;base64,{}' alt='Gallify' style='width:40px;height:40px;vertical-align: middle;'/>
+                </a>
             </div>
-            """, unsafe_allow_html=True)
+            """.format(base64.b64encode(open('images/simbolo_gallify.png', 'rb').read()).decode()), unsafe_allow_html=True)
 
 
 # Seção: Conceitos Básicos
@@ -445,7 +457,7 @@ elif page == "Black-Scholes":
     d_2 = d_1 - \sigma \sqrt{T}
     """)
 
-    st.write("""
+    st.write(r"""
     - $S$: Preço atual do ativo
     - $K$: Preço de exercício da opção
     - $T$: Tempo até o vencimento (em anos)
@@ -464,7 +476,7 @@ elif page == "Black-Scholes":
         T = st.number_input("Tempo até Vencimento (T) em anos", 0.1, 2.0, 1.0, 0.1)
     with col2:
         r = st.number_input("Taxa de Juros Livre de Risco (r)", 0.0, 0.1, 0.05, 0.01)
-        sigma = st.number_input("Volatilidade (σ)", 0.01, 0.5, 0.2, 0.01)
+        sigma = st.number_input("Volatilidade ($\sigma$)", 0.01, 0.5, 0.2, 0.01)
         option_type = st.selectbox("Tipo de Opção", ["Call", "Put"])
 
     # Cálculo dos parâmetros d1 e d2
@@ -475,7 +487,7 @@ elif page == "Black-Scholes":
     st.latex(r"""
     \begin{aligned}
     d_1 &= \frac{\ln\left(\dfrac{S}{K}\right) + \left(r + \dfrac{\sigma^2}{2}\right) T}{\sigma \sqrt{T}} \\
-        &= \frac{\ln\left(\dfrac{{%0.2f}}{{%0.2f}}\right) + \left(%0.2f + \dfrac{%0.2f^2}{2}\right) \times %0.2f}{%0.2f \sqrt{%0.2f}} \\
+        &= \frac{\ln\left(\dfrac{%0.2f}{%0.2f}\right) + \left(%0.2f + \dfrac{%0.2f^2}{2}\right) \times %0.2f}{%0.2f \sqrt{%0.2f}} \\
         &= %0.4f
     \end{aligned}
     """ % (S, K, r, sigma, T, sigma, T, d1))
@@ -519,11 +531,11 @@ elif page == "Gregas":
 
     st.subheader("Principais Gregas")
     st.write("""
-    - **Delta (Δ):** Sensibilidade do preço da opção em relação ao preço do ativo subjacente.
-    - **Gamma (Γ):** Taxa de variação do Delta em relação ao preço do ativo.
-    - **Theta (Θ):** Sensibilidade do preço da opção em relação ao tempo até o vencimento.
-    - **Vega (ν):** Sensibilidade do preço da opção em relação à volatilidade do ativo.
-    - **Rho (ρ):** Sensibilidade do preço da opção em relação à taxa de juros livre de risco.
+    - **Delta ($\Delta$):** Sensibilidade do preço da opção em relação ao preço do ativo subjacente.
+    - **Gamma ($\Gamma$):** Taxa de variação do Delta em relação ao preço do ativo.
+    - **Theta ($\Theta$):** Sensibilidade do preço da opção em relação ao tempo até o vencimento.
+    - **Vega ($\nu$):** Sensibilidade do preço da opção em relação à volatilidade do ativo.
+    - **Rho ($\rho$):** Sensibilidade do preço da opção em relação à taxa de juros livre de risco.
     """)
 
     # Parâmetros
@@ -534,7 +546,7 @@ elif page == "Gregas":
         T = st.number_input("Tempo até Vencimento (T) em anos", 0.1, 2.0, 1.0, 0.1)
     with col2:
         r = st.number_input("Taxa de Juros Livre de Risco (r)", 0.0, 0.1, 0.05, 0.01)
-        sigma = st.number_input("Volatilidade (σ)", 0.01, 0.5, 0.2, 0.01)
+        sigma = st.number_input("Volatilidade ($\sigma$)", 0.01, 0.5, 0.2, 0.01)
         option_type = st.selectbox("Tipo de Opção", ["Call", "Put"])
 
     # Seleção de uma única Grega
@@ -589,7 +601,7 @@ elif page == "Simulador Avançado":
         T = st.slider("Tempo até Vencimento (T) em anos", 0.1, 2.0, 1.0, 0.1)
     with col2:
         r = st.slider("Taxa de Juros Livre de Risco (r)", 0.0, 0.1, 0.05, 0.01)
-        sigma = st.slider("Volatilidade (σ)", 0.1, 0.5, 0.2, 0.01)
+        sigma = st.slider("Volatilidade ($\sigma$)", 0.1, 0.5, 0.2, 0.01)
         option_type = st.selectbox("Tipo de Opção", ["Call", "Put"])
 
     # Seleção da Grega
